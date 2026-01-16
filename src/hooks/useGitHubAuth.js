@@ -16,7 +16,11 @@
 import { useState, useEffect, useCallback } from 'react'
 
 // Server URL for OAuth endpoints
-const AUTH_SERVER_URL = 'http://localhost:3002'
+// Dynamically determine the server URL based on the current hostname
+// This allows auth to work on mobile devices accessing via network IP
+const AUTH_SERVER_URL = import.meta.env.PROD
+    ? 'https://psankho.onrender.com' // TODO: Replace with your actual production server URL after deployment
+    : `http://${window.location.hostname}:3002`
 
 // LocalStorage keys
 const STORAGE_KEYS = {
