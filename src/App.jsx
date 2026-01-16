@@ -132,6 +132,7 @@ function App() {
   const [currentView, setCurrentView] = useState('hero')
   const [totalCount, setTotalCount] = useState(0)
   const [repoStars, setRepoStars] = useState({}) // Cache for repo star counts
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false) // Mobile menu state
 
   // Fetch star count for a repository
   const fetchRepoStars = useCallback(async (repoFullName) => {
@@ -489,13 +490,70 @@ function App() {
 
           <button
             className="mobile-menu-btn"
-            aria-label="Open navigation menu"
-            onClick={startExploring}
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            ☰
+            {mobileMenuOpen ? '✕' : '☰'}
           </button>
         </div>
       </header>
+
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu-overlay" style={{
+          position: 'fixed',
+          top: '70px',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(10, 10, 10, 0.95)',
+          backdropFilter: 'blur(10px)',
+          zIndex: 999,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '2rem',
+          padding: '2rem'
+        }}>
+          <a href="#" className="nav-link" style={{ fontSize: '1.5rem' }} onClick={(e) => {
+            e.preventDefault();
+            navigateTo('hero');
+            setMobileMenuOpen(false);
+          }}>
+            Home
+          </a>
+          <a href="#about" className="nav-link" style={{ fontSize: '1.5rem' }} onClick={(e) => {
+            e.preventDefault();
+            navigateTo('about');
+            setMobileMenuOpen(false);
+          }}>
+            About
+          </a>
+          <a href="#explore" className="nav-link" style={{ fontSize: '1.5rem' }} onClick={(e) => {
+            e.preventDefault();
+            setActiveTab('issues');
+            navigateTo('app');
+            setMobileMenuOpen(false);
+          }}>
+            Explore Issues
+          </a>
+          <a href="#trending" className="nav-link" style={{ fontSize: '1.5rem' }} onClick={(e) => {
+            e.preventDefault();
+            showTrending();
+            setMobileMenuOpen(false);
+          }}>
+            Hot Repos
+          </a>
+          <a href="#resources" className="nav-link" style={{ fontSize: '1.5rem' }} onClick={(e) => {
+            e.preventDefault();
+            navigateTo('resources');
+            setMobileMenuOpen(false);
+          }}>
+            Resources
+          </a>
+        </div>
+      )}
 
       {/* Hero Section with ColorBends Background */}
       {currentView === 'hero' && (
