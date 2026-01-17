@@ -126,16 +126,25 @@ export function useGitHubAuth() {
      * - GitHub Client ID is public (not secret)
      * - We can safely build the OAuth URL here
      * - No network call = NO DELAY! ⚡
+     * 
+     * ANIMATION TRICK:
+     * - We set loading state first
+     * - Wait 300ms for React to render the animation
+     * - Then redirect to GitHub
      */
     const login = useCallback(() => {
         try {
             console.log('[Auth] Initiating login...')
 
-            // STEP 1: Get the GitHub Client ID from environment variables
+            // STEP 1: Show loading animation
+            // This triggers React to re-render the button with the animation
+            setIsLoading(true)
+
+            // STEP 2: Get the GitHub Client ID from environment variables
             // Vite exposes env vars prefixed with VITE_ to the frontend
             const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID
 
-            // STEP 2: Determine where GitHub should redirect after auth
+            // STEP 3: Determine where GitHub should redirect after auth
             // We use window.location.origin to get the current base URL
             // Examples: 
             //   - Local: http://localhost:5173
@@ -143,12 +152,13 @@ export function useGitHubAuth() {
             const redirectUri = window.location.origin
             console.log('[Auth] Using redirect URI:', redirectUri)
 
-            // STEP 3: Validate that Client ID exists
+            // STEP 4: Validate that Client ID exists
             if (!clientId) {
+                setIsLoading(false)  // Reset loading on error
                 throw new Error('GitHub Client ID not configured. Check your .env file.')
             }
 
-            // STEP 4: Build the GitHub OAuth authorization URL
+            // STEP 5: Build the GitHub OAuth authorization URL
             // This is the standard GitHub OAuth URL format
             // Learn more: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
             const githubAuthUrl =
@@ -159,13 +169,20 @@ export function useGitHubAuth() {
 
             console.log('[Auth] Redirecting to GitHub:', githubAuthUrl)
 
-            // STEP 5: Redirect the user to GitHub
-            // This happens INSTANTLY because we built the URL locally!
-            window.location.href = githubAuthUrl
+            // STEP 6: Wait a tiny moment for the animation to be visible
+            // Why 300ms?
+            // - React needs time to re-render with the loading state
+            // - Animation needs time to be seen by the user
+            // - Still feels instant (< 1 second)
+            setTimeout(() => {
+                // STEP 7: Redirect the user to GitHub
+                window.location.href = githubAuthUrl
+            }, 300)  // 300ms = 0.3 seconds (just enough to see the animation!)
 
         } catch (err) {
             console.error('[Auth] Login initialization failed:', err)
             setError(err.message)
+            setIsLoading(false)  // Reset loading on error
         }
     }, [])
 
