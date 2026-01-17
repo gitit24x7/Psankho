@@ -718,7 +718,7 @@ function App() {
               </p>
               <h3 className="feature-title" style={{ fontSize: '1.5rem', marginTop: '2.5rem', marginBottom: '1.5rem' }}>The Creator</h3>
               <p className="feature-description" style={{ fontSize: '1.1rem' }}>
-                This platform was built with <span style={{ color: '#ff5c7a' }}>❤️</span> by <strong>Aditya Ojha</strong> in Bangalore, driven by a passion for community and code. Want to know more about me? Check out my <a href="https://adityaojha.vercel.app" target="_blank" rel="noopener noreferrer">portfolio</a>.
+                I love building side projejcts in my free time, playing Chess sometimes and travelling on my bike! This platform was built with <span style={{ color: '#ff5c7a' }}>❤️</span> by <strong>me</strong> driven by a passion for community and code. Want to know more about me? Check out my <a href="https://adityaojha.vercel.app" target="_blank" rel="noopener noreferrer">portfolio</a>.
               </p>
               <div style={{ marginTop: '2rem' }}>
                 <button className="btn btn-primary" onClick={() => navigateTo('app')}>Start Finding Issues</button>
