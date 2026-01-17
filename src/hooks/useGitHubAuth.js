@@ -120,25 +120,49 @@ export function useGitHubAuth() {
 
     /**
      * Initiate GitHub login
-     * Redirects the user to GitHub's authorization page
+     * OPTIMIZED: Constructs OAuth URL directly on frontend (instant redirect!)
+     * 
+     * WHY THIS WORKS:
+     * - GitHub Client ID is public (not secret)
+     * - We can safely build the OAuth URL here
+     * - No network call = NO DELAY! ⚡
      */
-    const login = useCallback(async () => {
+    const login = useCallback(() => {
         try {
             console.log('[Auth] Initiating login...')
-            // Pass the current location as the redirect URI to ensure we come back to the right place
+
+            // STEP 1: Get the GitHub Client ID from environment variables
+            // Vite exposes env vars prefixed with VITE_ to the frontend
+            const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID
+
+            // STEP 2: Determine where GitHub should redirect after auth
+            // We use window.location.origin to get the current base URL
+            // Examples: 
+            //   - Local: http://localhost:5173
+            //   - Production: https://yourapp.vercel.app
             const redirectUri = window.location.origin
             console.log('[Auth] Using redirect URI:', redirectUri)
 
-            const response = await fetch(`${AUTH_SERVER_URL}/auth/github?redirect_uri=${encodeURIComponent(redirectUri)}`)
-            const data = await response.json()
-
-            if (data.url) {
-                // Redirect to GitHub OAuth page
-                console.log('[Auth] Redirecting to GitHub:', data.url)
-                window.location.href = data.url
-            } else {
-                throw new Error('Failed to get GitHub OAuth URL')
+            // STEP 3: Validate that Client ID exists
+            if (!clientId) {
+                throw new Error('GitHub Client ID not configured. Check your .env file.')
             }
+
+            // STEP 4: Build the GitHub OAuth authorization URL
+            // This is the standard GitHub OAuth URL format
+            // Learn more: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
+            const githubAuthUrl =
+                `https://github.com/login/oauth/authorize` +  // GitHub's OAuth endpoint
+                `?client_id=${clientId}` +                     // Your app's public ID
+                `&redirect_uri=${encodeURIComponent(redirectUri)}` + // Where to return after auth
+                `&scope=read:user`                            // What permissions we need
+
+            console.log('[Auth] Redirecting to GitHub:', githubAuthUrl)
+
+            // STEP 5: Redirect the user to GitHub
+            // This happens INSTANTLY because we built the URL locally!
+            window.location.href = githubAuthUrl
+
         } catch (err) {
             console.error('[Auth] Login initialization failed:', err)
             setError(err.message)
