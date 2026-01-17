@@ -48,7 +48,7 @@ The application uses a **Client-Server architecture** specifically for handling 
 
 ```mermaid
 graph TD
-    User[User] -->|Interacts| Frontend[React Frontend (Vite)]
+    User[User] -->|Interacts| Frontend["React Frontend (Vite)"]
     Frontend -->|Fetches Issues| GitHubAPI[GitHub Public API]
     
     subgraph "Authentication Flow"
@@ -59,7 +59,7 @@ graph TD
     AuthServer -->|5. Return Token| Frontend
     end
     
-    Frontend -->|6. Auth Requests (Higher Rate Limit)| GitHubAPI
+    Frontend -->|"6. Auth Requests (Higher Rate Limit)"| GitHubAPI
 ```
 
 ## 🏃‍♂️ Getting Started
