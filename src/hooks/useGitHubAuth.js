@@ -82,6 +82,7 @@ export function useGitHubAuth() {
     const handleCallback = useCallback(async (code) => {
         setIsLoading(true)
         setError(null)
+        console.log('[Auth] Handling callback with code:', code)
 
         try {
             const response = await fetch(`${AUTH_SERVER_URL}/auth/github/callback`, {
@@ -95,10 +96,12 @@ export function useGitHubAuth() {
             const data = await response.json()
 
             if (data.error) {
+                console.error('[Auth] Server returned error:', data.error)
                 throw new Error(data.error)
             }
 
             // Store token and user info
+            console.log('[Auth] Authentication successful, storing token')
             localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, data.access_token)
             localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(data.user))
 
@@ -107,6 +110,7 @@ export function useGitHubAuth() {
 
             return true
         } catch (err) {
+            console.error('[Auth] Callback processing failed:', err)
             setError(err.message)
             return false
         } finally {
@@ -120,16 +124,23 @@ export function useGitHubAuth() {
      */
     const login = useCallback(async () => {
         try {
-            const response = await fetch(`${AUTH_SERVER_URL}/auth/github`)
+            console.log('[Auth] Initiating login...')
+            // Pass the current location as the redirect URI to ensure we come back to the right place
+            const redirectUri = window.location.origin
+            console.log('[Auth] Using redirect URI:', redirectUri)
+
+            const response = await fetch(`${AUTH_SERVER_URL}/auth/github?redirect_uri=${encodeURIComponent(redirectUri)}`)
             const data = await response.json()
 
             if (data.url) {
                 // Redirect to GitHub OAuth page
+                console.log('[Auth] Redirecting to GitHub:', data.url)
                 window.location.href = data.url
             } else {
                 throw new Error('Failed to get GitHub OAuth URL')
             }
         } catch (err) {
+            console.error('[Auth] Login initialization failed:', err)
             setError(err.message)
         }
     }, [])

@@ -48,15 +48,25 @@ app.use(express.json())
  */
 app.get('/auth/github', (req, res) => {
     const clientId = process.env.GITHUB_CLIENT_ID
+    const redirectUri = req.query.redirect_uri
+
+    console.log('[Auth] Login requested')
+    if (redirectUri) console.log(`[Auth] Using redirect_uri: ${redirectUri}`)
 
     if (!clientId) {
+        console.error('[Auth] Error: GITHUB_CLIENT_ID not set')
         return res.status(500).json({
             error: 'Server configuration error: GITHUB_CLIENT_ID not set'
         })
     }
 
     // GitHub OAuth authorization URL with required scopes
-    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=read:user`
+    let githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=read:user`
+
+    // Add redirect_uri if provided
+    if (redirectUri) {
+        githubAuthUrl += `&redirect_uri=${encodeURIComponent(redirectUri)}`
+    }
 
     res.json({ url: githubAuthUrl })
 })
