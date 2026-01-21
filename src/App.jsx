@@ -702,6 +702,17 @@ function App() {
                 </a>
               </div>
 
+              {/* Peerlist Launch Badge */}
+              <div style={{ marginTop: '2rem' }}>
+                <a href="https://peerlist.io/adityaojha/project/psachnooss-finder" target="_blank" rel="noreferrer">
+                  <img
+                    src="https://peerlist.io/api/v1/projects/embed/PRJHKKDQKDKBKE9RLFLJADK7Q89GGR?showUpvote=true&theme=light"
+                    alt="Psachno-OSS Finder"
+                    style={{ width: 'auto', height: '72px' }}
+                  />
+                </a>
+              </div>
+
               <div className="stats">
                 <div className="stat-item">
                   <div className="stat-value">50K+</div>
